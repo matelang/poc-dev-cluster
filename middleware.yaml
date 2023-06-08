@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: cluster-addons
+  namespace: argocd
+spec:
+  generators:
+  - git:
+      repoURL: https://github.com/matelang/poc-middleware-argo-dev
+      revision: HEAD
+      directories:
+      - path: *
+  template:
+    metadata:
+      name: '{{path.basename}}'
+    spec:
+      project: "middleware"
+      source:
+        repoURL: https://github.com/matelang/poc-middleware-argo-dev
+        targetRevision: HEAD
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{path.basename}}'
+      syncPolicy:
+        syncOptions:
+        - CreateNamespace=true
+
